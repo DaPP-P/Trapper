@@ -1,6 +1,5 @@
 venv/
-vosk-model-small-en-us-0.15/
-*.zip
+models/
 *.wav
 __pycahce__/
 .env
