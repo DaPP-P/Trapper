@@ -3,3 +3,4 @@ vosk-model-small-en-us-0.15/
 *.zip
 *.wav
 __pycahce__/
+.env
