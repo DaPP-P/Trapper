@@ -1,0 +1,11 @@
+End Goal: A Raspberry Pi that can answer word comands. I want it to be able to respond and action these commands:
+  * Set an Alarm
+  * What is the weather
+  * Act like a mirror
+  * Play music
+
+
+Tasks:
+
+* Voice commands set up on the Raspberry Pi.
+* Python scripts to call the requests
