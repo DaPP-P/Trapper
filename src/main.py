@@ -1,11 +1,10 @@
-from commands import get_weather, alarm, turn_off_alarm
+from commands import get_weather, alarm, turn_off_alarm, play, pause, next_track, play_search
 from scheduler import schedule, start_scheduler
 import datetime
 
 
 # Updatable
 user = "Daniel"
-location = "Auckland"
 alarm_time = "15:20:00"
 
 weather = None
@@ -18,15 +17,16 @@ def minutes_before(time_string, minus_minutes):
 
     return new_time.strftime("%H:%M:%S")
 
-
 # Programmability
-def preload_weather():
+
+# Method to pull weather data
+def preload_weather(location = "Auckland"):
     global weather
 
     weather = get_weather(location)
     print("Weather preloaded.")
 
-
+# Method to set the morning Alarm.
 def morning_alarm():
     print(weather)
     alarm()
