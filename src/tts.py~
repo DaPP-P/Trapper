@@ -1,0 +1,24 @@
+import subprocess
+import os
+
+
+PIPER = "/home/pidaniel/piper/piper"
+OUTPUT = "/tmp/trapper.wav"
+
+MODEL = "/home/pidaniel/Trapper/models/en_US-lessac-medium.onnx"
+
+
+def speak(text):
+    print(f"Trapper: {text}")
+
+    process = subprocess.run(
+        [PIPER, "--model", MODEL, "--output_file", OUTPUT],
+        input=text.encode(),
+        cwd="/home/pidaniel/piper",
+    )
+
+    if process.returncode != 0:
+        print("Piper failed.")
+        return
+
+    os.system(f"aplay -D plughw:2,0 {OUTPUT}")
