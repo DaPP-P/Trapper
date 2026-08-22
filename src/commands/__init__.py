@@ -8,3 +8,8 @@ from .spotify import (
     show_devices,
     play_search
 )
+from .system import (
+    volume_up,
+    volume_down,
+    mute
+)

@@ -33,12 +33,21 @@ def play(device_name="DESKTOP-COUG4J8"):
     )
 
     if device is None:
-        print(f"{device_name} is not available.")
-        return
+        return f"{device_name} is not available."
 
     spotify.start_playback(device_id=device["id"])
 
-    print(f"Playing on {device['name']}")
+    current = spotify.current_playback()
+
+    if current and current["item"]:
+        track = current["item"]
+
+        song = track["name"]
+        artist = track["artists"][0]["name"]
+
+        return f"{song} by {artist}"
+
+    return "Spotify playback started."
     
 
 def pause():
@@ -57,8 +66,7 @@ def play_search(search):
     devices = spotify.devices()["devices"]
 
     if not devices:
-        print("No Spotify devices available.")
-        return
+        return "No Spotify devices are available."
 
     device_name = "DESKTOP-COUG4J8"
 
@@ -68,8 +76,7 @@ def play_search(search):
     )
 
     if device is None:
-        print(f"{device_name} is not available.")
-        return
+        return f"{device_name} is not available."
 
     results = spotify.search(
         q=search,
@@ -80,8 +87,7 @@ def play_search(search):
     tracks = results["tracks"]["items"]
 
     if not tracks:
-        print(f"I couldn't find {search} on Spotify.")
-        return
+        return f"I couldn't find {search} on Spotify."
 
     track = tracks[0]
 
@@ -90,7 +96,7 @@ def play_search(search):
         uris=[track["uri"]]
     )
 
-    print(
-        f"Playing {track['name']} by "
-        f"{track['artists'][0]['name']}"
-    )
+    song = track["name"]
+    artist = track["artists"][0]["name"]
+
+    return f"{song} by {artist}"

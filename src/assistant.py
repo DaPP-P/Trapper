@@ -8,6 +8,9 @@ from commands import (
     pause,
     next_track,
     play_search,
+    volume_up,
+    volume_down,
+    mute
 )
 
 from scheduler import schedule, start_scheduler
@@ -34,37 +37,42 @@ def minutes_before(time_string, minus_minutes):
 
 
 # Setup Functions
-
 def start_luna():
-
-    # Start scheduler
     start_scheduler()
 
-    # Preload weather shortly before alarm
     schedule(
         minutes_before(alarm_time, 1),
         preload_weather
     )
 
-    # Set alarm
     schedule(
         alarm_time,
         morning_alarm
     )
 
     print("Luna is running...")
-    print("Alarm set for " + alarm_time)
+    print("Say 'Luna' to wake me.")
 
-    speak("Luna is online.")
-
-    # Start voice loop
     while True:
+        command = listen().lower().strip()
 
-        command = listen()
+        # Luna wasn't mentioned
+        if "luna" not in command:
+            print("Wake word not detected. Ignoring.")
+            continue
+
+        # Take everything AFTER "luna"
+        command = command.split("luna", 1)[1].strip()
+
+        # They only said "Luna", "Hey Luna", etc.
+        if not command:
+            speak("Yes?")
+            command = listen().lower().strip()
 
         response = handle_command(command)
 
-        speak(response)
+        if response:
+            speak(response)
 
 
 # Commands
@@ -83,25 +91,38 @@ def morning_alarm():
 
 
 # Voice command handling
-
 def handle_command(command):
-
-    command = command.lower()
+    command = command.lower().strip()
 
     if "weather" in command:
-        return get_weather()
+        return get_weather("Auckland")
 
     elif "turn off alarm" in command or command == "off":
         turn_off_alarm()
         return f"Good morning {user}."
 
-    elif "play" in command:
-        play()
-        return "Playing."
+    # "play Everlong", "play Mr Brightside", etc.
+    elif command.startswith("play "):
+        search = command.removeprefix("play ").strip()
+        song = play_search(search)
+
+        if song:
+            return f"Playing {song}."
+
+        return f"I couldn't find {search}."
+
+    # Just "play" resumes Spotify
+    elif command == "play":
+        song = play()
+
+        if song:
+            return f"Playing {song}."
+
+        return "Playing Spotify."
 
     elif "pause" in command:
         pause()
-        return "Paused."
+        return "Paused Spotify."
 
     elif "next" in command:
         next_track()
@@ -112,6 +133,18 @@ def handle_command(command):
 
     elif "who are you" in command:
         return "I'm Luna, your personal assistant."
+    
+    elif "volume up" in command or "turn it up" in command:
+        volume_up()
+        return "Volume up."
+
+    elif "volume down" in command or "turn it down" in command:
+        volume_down()
+        return "Volume down."
+
+    elif "mute" in command:
+        mute()
+        return None
 
     else:
         return "I don't know how to do that yet."

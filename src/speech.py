@@ -3,11 +3,24 @@ import queue
 import sounddevice as sd
 from vosk import Model, KaldiRecognizer
 
-MODEL_PATH = "/home/pidaniel/Trapper/models/vosk-model-small-en-us-0.15"
-MICROPHONE = 2
+MODEL_PATH = "models/vosk-model-small-en-us-0.15"
 SAMPLE_RATE = 16000
 
 audio_queue = queue.Queue(maxsize=20)
+
+
+def find_microphone(name="Blue Snowball"):
+    devices = sd.query_devices()
+
+    for index, device in enumerate(devices):
+        if (
+            name.lower() in device["name"].lower()
+            and device["max_input_channels"] > 0
+        ):
+            print(f"Microphone: {device['name']} (device {index})")
+            return index
+
+    raise RuntimeError(f"Could not find microphone: {name}")
 
 
 def audio_callback(indata, frames, time, status):
@@ -21,7 +34,7 @@ def audio_callback(indata, frames, time, status):
 
 
 def listen():
-    print("Loading speech model...")
+    microphone = find_microphone()
 
     model = Model(MODEL_PATH)
     recognizer = KaldiRecognizer(model, SAMPLE_RATE)
@@ -31,7 +44,7 @@ def listen():
     with sd.RawInputStream(
         samplerate=SAMPLE_RATE,
         blocksize=4000,
-        device=MICROPHONE,
+        device=microphone,
         dtype="int16",
         channels=1,
         callback=audio_callback,
